@@ -33,6 +33,26 @@ app.get('/pokemon', async (req, res) => {
   }
 });
 
+app.get('/pokemon/:id', async (req, res) => {
+  const pokemonId = parseInt(req.params.id, 10);
+  try {
+    const filePath = path.join(__dirname, './public/pokemon-data.json');
+    const data = await fs.readFile(filePath, 'utf8');
+    const jsonData = JSON.parse(data);
+
+    const pokemon = jsonData.find(p => p.details.id === pokemonId);
+    if (pokemon) {
+      res.json(pokemon);
+    } else {
+      res.status(404).json({ error: 'Pokemon not found' });
+    }
+  } catch (error) {
+    console.error('Error reading JSON file:', error);
+    res.status(500).json({ error: 'Failed to fetch data' });
+  }
+});
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
