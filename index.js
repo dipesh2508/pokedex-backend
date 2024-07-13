@@ -1,13 +1,14 @@
 const express = require('express');
 const fs = require('fs').promises;
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 const PORT = 8000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 // Custom middleware example (logging)
 app.use((req, res, next) => {
@@ -15,10 +16,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
 // Route to serve the JSON data
 app.get('/pokemon', async (req, res) => {
   try {
-    const data = await fs.readFile('./pokemon-data.json', 'utf8');
+    const filePath = path.join(__dirname, './public/pokemon-data.json');
+    const data = await fs.readFile(filePath, 'utf8');
     const jsonData = JSON.parse(data);
     res.json(jsonData);
   } catch (error) {
@@ -37,5 +43,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-module.exports = app;
